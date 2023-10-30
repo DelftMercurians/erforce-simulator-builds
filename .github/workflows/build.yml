@@ -14,12 +14,14 @@ jobs:
     - name: Install MSYS2
       uses: msys2/setup-msys2@v2
       with:
+        cache: true
         msystem: mingw64
         install: patch make mingw-w64-x86_64-gcc mingw-w64-x86_64-cmake mingw-w64-x86_64-ninja
     
     - name: Install Qt
       uses: jurplel/install-qt-action@v3
       with:
+        cache: true
         version: '5.13.2'
         host: 'windows'
         target: 'desktop'
@@ -53,7 +55,7 @@ jobs:
 
     steps:
     - name: Install Dependencies
-      run: brew install cmake git sdl2 protobuf libusb python@2 qt@5
+      run: brew install qt@5
 
     - name: Checkout repository and submodules
       uses: actions/checkout@v2
