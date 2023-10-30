@@ -32,6 +32,7 @@ jobs:
 
     - name: Configure and Build
       run: |
+        cd framework
         mkdir build-win
         cd build-win
         cmake -DCMAKE_BUILD_TYPE=Release ..
@@ -44,7 +45,7 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: simulator-cli
-        path: build-win/simulator-cli.exe
+        path: framework/build-win/simulator-cli.exe
 
 
   build-mac:
@@ -61,6 +62,7 @@ jobs:
 
     - name: Configure and Build
       run: |
+        cd framework
         mkdir build-mac
         cd build-mac
         cmake -DCMAKE_BUILD_TYPE=Release ..
@@ -71,7 +73,7 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
           name: simulator-cli
-          path: build-mac/simulator-cli.app
+          path: framework/build-mac/simulator-cli.app
 
   build-linux:
     runs-on: ubuntu-latest
@@ -95,6 +97,7 @@ jobs:
 
     - name: Configure and Build
       run: |
+        cd framework
         mkdir build-linux
         cd build-linux
         cmake ..
@@ -106,4 +109,4 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
           name: simulator-cli
-          path: build-linux/simulator-cli.AppImage
+          path: framework/build-linux/simulator-cli.AppImage
