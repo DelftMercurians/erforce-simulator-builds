@@ -65,6 +65,13 @@ jobs:
         cd build-mac
         cmake -DCMAKE_BUILD_TYPE=Release ..
         make simulator-cli
+        macdeployqt simulator-cli.app
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v2
+      with:
+          name: simulator-cli
+          path: build-mac/simulator-cli.app
 
   build-linux:
     runs-on: ubuntu-latest
@@ -79,9 +86,24 @@ jobs:
         submodules: recursive
         fetch-depth: 1
 
+    - name: 'Install linuxdeploy'
+      run: |
+          wget https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage
+          wget https://github.com/linuxdeploy/linuxdeploy-plugin-qt/releases/download/continuous/linuxdeploy-plugin-qt-x86_64.AppImage
+          chmod +x linuxdeploy-x86_64.AppImage
+          chmod +x linuxdeploy-plugin-qt-x86_64.AppImage
+
     - name: Configure and Build
       run: |
         mkdir build-linux
         cd build-linux
         cmake ..
         make simulator-cli
+        cd ..
+        ./linuxdeploy-x86_64.AppImage --appdir build-linux/simulator-cli.AppDir --plugin qt --output appimage
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v2
+      with:
+          name: simulator-cli
+          path: build-linux/simulator-cli.AppImage
