@@ -7,12 +7,15 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  build-win:
     runs-on: windows-latest
 
     steps:
     - name: Install MSYS2
       uses: msys2/setup-msys2@v2
+      with:
+        msystem: mingw64
+        install: patch make mingw-w64-x86_64-gcc mingw-w64-x86_64-cmake mingw-w64-x86_64-ninja
     
     - name: Install Qt
       uses: jurplel/install-qt-action@v3
@@ -33,5 +36,52 @@ jobs:
         cd build-win
         cmake -DCMAKE_BUILD_TYPE=Release ..
         cmake --build . --target simulator-cli
+        cd build-win
+        windeployqt.exe --release simulator-cli.exe
       shell: msys2 {0}
 
+    - name: Upload artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: simulator-cli
+        path: build-win/simulator-cli.exe
+
+
+  build-mac:
+    runs-on: macos-latest
+
+    steps:
+    - name: Install Dependencies
+      run: brew install cmake git sdl2 protobuf libusb python@2 qt@5
+
+    - name: Checkout repository and submodules
+      uses: actions/checkout@v2
+      with:
+        submodules: recursive
+
+    - name: Configure and Build
+      run: |
+        mkdir build-mac
+        cd build-mac
+        cmake -DCMAKE_BUILD_TYPE=Release ..
+        make simulator-cli
+
+  build-linux:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Install Dependencies
+      run: sudo apt-get install -y cmake protobuf-compiler libprotobuf-dev qtbase5-dev libqt5opengl5-dev g++ libusb-1.0-0-dev libsdl2-dev libqt5svg5-dev libssl-dev
+
+    - name: Checkout repository and submodules
+      uses: actions/checkout@v2
+      with:
+        submodules: recursive
+        fetch-depth: 1
+
+    - name: Configure and Build
+      run: |
+        mkdir build-linux
+        cd build-linux
+        cmake ..
+        make simulator-cli
